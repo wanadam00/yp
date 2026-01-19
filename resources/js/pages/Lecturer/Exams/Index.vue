@@ -1,0 +1,67 @@
+<script setup>
+import { Head, Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { Inertia } from '@inertiajs/inertia'
+import AppLayout from '@/layouts/AppLayout.vue'
+
+defineProps({
+    exams: {
+        type: Array,
+        required: true
+    }
+})
+
+const deleteExam = (id) => {
+    if (confirm('Are you sure you want to delete this exam?')) {
+        Inertia.delete(`/exams/${id}`)
+    }
+}
+</script>
+
+<template>
+
+    <AppLayout>
+        <div class="p-6">
+            <!-- Page Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                    My Exams
+                </h1>
+                <Link href="/exams/create"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                    + Create Exam
+                </Link>
+            </div>
+
+            <!-- Empty State -->
+            <div v-if="exams.length === 0"
+                class="p-8 text-center text-gray-500 bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-400">
+                No exams created yet.
+            </div>
+
+            <!-- Exam List -->
+            <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div v-for="exam in exams" :key="exam.id"
+                    class="p-5 bg-white border rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ exam.title }}</h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Subject: {{ exam.subject?.subject_name ?? '-' }}
+                    </p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Duration: {{ exam.duration_minutes }} minutes
+                    </p>
+                    <div class="flex justify-end mt-4 space-x-2">
+                        <Link :href="`/exams/${exam.id}/edit`"
+                            class="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50 dark:hover:bg-gray-700">
+                            Edit
+                        </Link>
+                        <button @click="deleteExam(exam.id)"
+                            class="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-50 dark:hover:bg-gray-700">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </AppLayout>
+</template>

@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,98 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        /**
+         * -----------------------------
+         * Create Roles
+         * -----------------------------
+         */
+        $lecturerRole = Role::firstOrCreate([
+            'name' => 'lecturer',
+            'guard_name' => 'web',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $studentRole = Role::firstOrCreate([
+            'name' => 'student',
+            'guard_name' => 'web',
+        ]);
+
+        /**
+         * -----------------------------
+         * (Optional) Create Permissions
+         * -----------------------------
+         */
+        $permissions = [
+            'create exams',
+            'manage classes',
+            'manage subjects',
+            'view results',
+            'mark answers',
+
+            'view exams',
+            'start exam',
+            'submit exam',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web',
+            ]);
+        }
+
+        // Assign permissions to roles
+        $lecturerRole->syncPermissions([
+            'create exams',
+            'manage classes',
+            'manage subjects',
+            'view results',
+            'mark answers',
+        ]);
+
+        $studentRole->syncPermissions([
+            'view exams',
+            'start exam',
+            'submit exam',
+        ]);
+
+        /**
+         * -----------------------------
+         * Create Lecturer User
+         * -----------------------------
+         */
+        $lecturer = User::firstOrCreate(
+            ['email' => 'lecturer@example.com'],
+            [
+                'name' => 'Lecturer Account',
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        $lecturer->assignRole($lecturerRole);
+
+        /**
+         * -----------------------------
+         * Create Student User
+         * -----------------------------
+         */
+        $student = User::firstOrCreate(
+            ['email' => 'student@example.com'],
+            [
+                'name' => 'Student Account',
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        $student->assignRole($studentRole);
+        $this->call([
+            RoleSeeder::class,
+            LecturerSeeder::class,
+            StudentSeeder::class,
+            ClassesSeeder::class,
+            SubjectSeeder::class,
+            ExamSeeder::class,
+            QuestionSeeder::class,
+            QuestionOptionSeeder::class,
         ]);
     }
 }

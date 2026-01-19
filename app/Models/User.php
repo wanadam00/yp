@@ -4,14 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -48,5 +51,28 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    // Lecturer → Classes
+    public function classes()
+    {
+        return $this->hasMany(ClassRoom::class, 'lecturer_id');
+    }
+
+    // Student → Exam Attempts
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class, 'student_id');
+    }
+
+    // Student → Classes (many-to-many)
+    public function classesJoined()
+    {
+        return $this->belongsToMany(
+            ClassRoom::class,
+            'class_students',
+            'student_id',
+            'class_id'
+        );
     }
 }

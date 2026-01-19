@@ -25,6 +25,11 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Exams',
+        href: '/exams',
+        icon: Folder,
+    }
 ];
 
 const footerNavItems: NavItem[] = [

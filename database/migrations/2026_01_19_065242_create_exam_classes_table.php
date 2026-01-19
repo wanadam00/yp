@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('exam_id')->unsigned()->nullable();
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->bigInteger('class_id')->unsigned()->nullable();
-            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->foreign('class_id')->references('id')->on('class_rooms')->onDelete('cascade');
             $table->timestamps();
         });
     }

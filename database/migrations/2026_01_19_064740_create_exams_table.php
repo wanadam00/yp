@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('subject_id')->unsigned()->nullable();
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->float('duration_minutes')->nullable();
