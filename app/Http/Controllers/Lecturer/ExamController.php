@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Lecturer;
 
+use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Subject;
 use App\Models\ClassRoom;
 use Illuminate\Http\Request;
+use App\Models\ExamClasses;
 
 class ExamController extends Controller
 {
@@ -89,5 +91,45 @@ class ExamController extends Controller
         $exam->delete();
 
         return redirect()->route('exams.index');
+    }
+
+    public function assign(Exam $exam)
+    {
+        // Get classes that belong to the current lecturer
+        $classes = ClassRoom::where('lecturer_id', auth()->id())->get();
+
+        // Load already assigned classes
+        $assignedClassIds = $exam->classes()->pluck('class_id')->toArray();
+        // dd($classes);
+
+        return inertia('Lecturer/Exams/Assign', [
+            'exam' => $exam,
+            'classes' => $classes,
+            'assignedClassIds' => $assignedClassIds,
+        ]);
+    }
+
+    /**
+     * Store the exam-class assignments
+     */
+    public function storeAssignment(Request $request, Exam $exam)
+    {
+        $request->validate([
+            'class_ids' => 'required|array',
+            'class_ids.*' => 'exists:class_rooms,id',
+        ]);
+
+        // Remove old assignments
+        ExamClasses::where('exam_id', $exam->id)->delete();
+
+        // Insert new assignments
+        foreach ($request->class_ids as $classId) {
+            ExamClasses::create([
+                'exam_id' => $exam->id,
+                'class_id' => $classId,
+            ]);
+        }
+
+        return redirect()->route('exams.index')->with('success', 'Exam assigned to classes successfully.');
     }
 }

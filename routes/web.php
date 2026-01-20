@@ -3,9 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\ExamController;
+// use App\Http\Controllers\ExamController;
+// use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\Lecturer\ExamController;
+use App\Http\Controllers\Lecturer\QuestionController;
 use App\Http\Controllers\ExamAttemptController;
-use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\Lecturer\ClassStudentController;
+use App\Http\Controllers\Lecturer\ExamPreviewController;
+use App\Http\Controllers\Lecturer\QuestionOptionController;
+use App\Http\Controllers\Student\StudentExamController;
+use App\Http\Controllers\Student\StudentAnswerController;
+use App\Http\Controllers\Student\StudentExamResultController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -19,13 +27,45 @@ Route::get('dashboard', function () {
 
 Route::middleware(['auth', 'role:lecturer'])->group(function () {
     Route::resource('exams', ExamController::class);
-    Route::post('exams/{exam}/questions', [QuestionController::class, 'store']);
+    Route::resource('questions', QuestionController::class);
+    Route::resource('question-options', QuestionOptionController::class);
+    Route::get('exams/{exam}/preview', [ExamPreviewController::class, 'show'])->name('exams.preview');
+    Route::get('exams/{exam}/assign', [ExamController::class, 'assign'])->name('exams.assign');
+    Route::post('exams/{exam}/assign', [ExamController::class, 'storeAssignment']);
+    Route::resource('class-student', ClassStudentController::class);
 });
 
 Route::middleware(['auth', 'role:student'])->group(function () {
-    Route::get('exams/{exam}/start', [ExamAttemptController::class, 'start']);
-    Route::get('exams/{exam}/take', [ExamAttemptController::class, 'take'])->name('exams.take');
-    Route::post('exams/{exam}/submit', [ExamAttemptController::class, 'submit']);
+
+    Route::get(
+        'student/exams',
+        [StudentExamController::class, 'index']
+    )->name('student.exams.index');
+
+    Route::post(
+        'student/exams/{exam}/start',
+        [StudentExamController::class, 'start']
+    )->name('student.exams.start');
+
+    Route::get(
+        'student/exams/{exam}',
+        [StudentExamController::class, 'show']
+    )->name('student.exams.show');
+
+    Route::post(
+        'student/answers',
+        [StudentAnswerController::class, 'store']
+    )->name('student.answers.store');
+
+    Route::post(
+        'student/exam-attempts/{attempt}/submit',
+        [StudentExamResultController::class, 'submit']
+    )->name('student.exams.submit');
+
+    Route::get(
+        'student/results/{attempt}',
+        [StudentExamResultController::class, 'show']
+    )->name('student.results.show');
 });
 
 

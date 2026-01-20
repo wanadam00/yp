@@ -11,13 +11,21 @@ class SubjectSeeder extends Seeder
     public function run(): void
     {
         $classes = ClassRoom::all();
+        $subjects = [
+            'Web Development',
+            'Object-Oriented Programming',
+            'Database Systems',
+            'Operating Systems',
+            'Cyber Security'
+        ];
 
         foreach ($classes as $class) {
-            Subject::factory(3)->create([
-                'class_id' => $class->id,
-            ]);
+            foreach (collect($subjects)->random(2) as $name) {
+                Subject::create([
+                    'subject_name' => $name,
+                    'class_id' => $class->id,
+                ]);
+            }
         }
-
-        $this->command->info('✅ Subjects created.');
     }
 }

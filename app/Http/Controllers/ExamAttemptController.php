@@ -11,10 +11,6 @@ use Carbon\Carbon;
 
 class ExamAttemptController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['role:student']);
-    }
 
     public function start(Exam $exam)
     {

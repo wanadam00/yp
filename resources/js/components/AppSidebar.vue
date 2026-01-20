@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, FileQuestionIcon, BookOpenText } from 'lucide-vue-next';
 
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -19,18 +20,54 @@ import { type NavItem } from '@/types';
 
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Exams',
-        href: '/exams',
-        icon: Folder,
+// 👉 Get roles from Inertia
+const page = usePage()
+const roles = computed<string[]>(() => page.props.auth?.roles ?? [])
+
+// Helper
+const hasRole = (role: string) => roles.value.includes(role)
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ]
+
+    // Lecturer menu
+    if (hasRole('lecturer')) {
+        items.push(
+            {
+                title: 'Exams',
+                href: '/exams',
+                icon: BookOpenText,
+            },
+            {
+                title: 'Questions',
+                href: '/questions',
+                icon: FileQuestionIcon,
+            },
+            {
+                title: 'Classes',
+                href: '/class-student',
+                icon: Folder,
+            }
+        )
     }
-];
+
+    // Student menu
+    if (hasRole('student')) {
+        items.push({
+            title: 'My Exams',
+            href: '/student/exams',
+            icon: BookOpen,
+        })
+    }
+
+    return items
+})
 
 const footerNavItems: NavItem[] = [
     {
@@ -65,7 +102,7 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
+            <!-- <NavFooter :items="footerNavItems" /> -->
             <NavUser />
         </SidebarFooter>
     </Sidebar>

@@ -13,21 +13,20 @@ class QuestionSeeder extends Seeder
         $exams = Exam::all();
 
         foreach ($exams as $exam) {
-            // 3 MCQ questions
-            Question::factory(3)->create([
+            // Create 3 questions per exam
+            Question::create([
                 'exam_id' => $exam->id,
-                // 'question_type' => 'mcq',
-                'marks' => 1
+                'question_text' => "What does HTML stand for?",
+                'question_type' => 'mcq',
+                'marks' => 10,
             ]);
 
-            // 2 Open text questions
-            Question::factory(2)->create([
+            Question::create([
                 'exam_id' => $exam->id,
-                // 'question_type' => 'text',
-                'marks' => 2
+                'question_text' => "Which of the following is a primary key attribute?",
+                'question_type' => 'mcq',
+                'marks' => 10,
             ]);
         }
-
-        $this->command->info('✅ Questions created.');
     }
 }

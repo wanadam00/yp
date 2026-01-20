@@ -50,13 +50,30 @@ const deleteExam = (id) => {
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Duration: {{ exam.duration_minutes }} minutes
                     </p>
-                    <div class="flex justify-end mt-4 space-x-2">
+                    <div class="flex flex-wrap justify-end gap-2 mt-4">
+                        <Link :href="`/exams/${exam.id}/assign`"
+                            class="px-3 py-1 text-sm text-orange-600 border border-orange-600 rounded hover:bg-orange-50 transition">
+                            Assign
+                        </Link>
+
+                        <Link :href="`/exams/${exam.id}/preview`"
+                            class="inline-flex items-center px-3 py-1 text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded hover:bg-emerald-100 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Preview
+                        </Link>
+
                         <Link :href="`/exams/${exam.id}/edit`"
-                            class="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50 dark:hover:bg-gray-700">
+                            class="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50">
                             Edit
                         </Link>
+
                         <button @click="deleteExam(exam.id)"
-                            class="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-50 dark:hover:bg-gray-700">
+                            class="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-50">
                             Delete
                         </button>
                     </div>

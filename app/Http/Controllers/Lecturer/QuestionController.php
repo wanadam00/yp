@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Lecturer;
 
+use App\Http\Controllers\Controller;
 use App\Models\Question;
 use App\Models\Exam;
 use Illuminate\Http\Request;
@@ -47,7 +48,8 @@ class QuestionController extends Controller
             }
         }
 
-        return redirect()->route('questions.index');
+        // return back()->with('success', 'Question added');
+        return redirect()->route('questions.index')->with('success', 'Question added');
     }
 
     public function show(Question $question)
@@ -69,13 +71,20 @@ class QuestionController extends Controller
 
     public function update(Request $request, Question $question)
     {
+        // 1. Validate everything (Question + Options)
         $request->validate([
             'exam_id' => 'required|exists:exams,id',
             'question_text' => 'required',
             'question_type' => 'required|in:mcq,text',
             'marks' => 'required|integer|min:1',
+            // Validate nested options array
+            'options' => 'required_if:question_type,mcq|array|min:2',
+            'options.*.id' => 'nullable',
+            'options.*.text' => 'required|string',
+            'options.*.is_correct' => 'boolean',
         ]);
 
+        // 2. Update Question Basic Info
         $question->update([
             'exam_id' => $request->exam_id,
             'question_text' => $request->question_text,
@@ -83,9 +92,29 @@ class QuestionController extends Controller
             'marks' => $request->marks,
         ]);
 
-        // Handle options update for MCQs if needed
+        // 3. Sync Options
+        if ($request->question_type === 'mcq') {
+            $incomingIds = collect($request->options)->pluck('id')->filter()->toArray();
 
-        return redirect()->route('questions.index');
+            // Delete options no longer in the form
+            $question->options()->whereNotIn('id', $incomingIds)->delete();
+
+            // Update existing or create new
+            foreach ($request->options as $optionData) {
+                $question->options()->updateOrCreate(
+                    ['id' => $optionData['id'] ?? null],
+                    [
+                        'option_text' => $optionData['text'],
+                        'is_correct' => (bool) ($optionData['is_correct'] ?? false),
+                    ]
+                );
+            }
+        } else {
+            // If type changed to text, remove all options
+            $question->options()->delete();
+        }
+
+        return redirect()->route('questions.index')->with('success', 'Question updated successfully');
     }
 
     public function destroy(Question $question)
@@ -93,31 +122,4 @@ class QuestionController extends Controller
         $question->delete();
         return back()->with('success', 'Question deleted');
     }
-
-    // public function store(Request $request, Exam $exam)
-    // {
-    //     $request->validate([
-    //         'question_text' => 'required',
-    //         'question_type' => 'required|in:mcq,text',
-    //         'marks' => 'required|integer|min:1',
-    //     ]);
-
-    //     $question = Question::create([
-    //         'exam_id' => $exam->id,
-    //         'question_text' => $request->question_text,
-    //         'question_type' => $request->question_type,
-    //         'marks' => $request->marks,
-    //     ]);
-
-    //     if ($request->question_type === 'mcq') {
-    //         foreach ($request->options as $option) {
-    //             $question->options()->create([
-    //                 'option_text' => $option['text'],
-    //                 'is_correct' => $option['is_correct'],
-    //             ]);
-    //         }
-    //     }
-
-    //     return back()->with('success', 'Question added');
-    // }
 }

@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClassStudent extends Model
 {
-    //
+    protected $table = 'class_students';
+    public $timestamps = false;
+
+    protected $fillable = ['class_id', 'student_id'];
 }

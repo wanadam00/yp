@@ -12,10 +12,18 @@ class ClassesSeeder extends Seeder
     {
         $lecturer = User::role('lecturer')->first();
 
-        ClassRoom::factory(2)->create([
-            'lecturer_id' => $lecturer->id,
-        ])->each(function ($class) {
-            $this->command->info("Class {$class->class_name} created.");
-        });
+        $classes = [
+            ['class_name' => 'CS Year 1 - Foundations'],
+            ['class_name' => 'CS Year 2 - Software Engineering'],
+            ['class_name' => 'CS Year 3 - Data Science'],
+        ];
+
+        foreach ($classes as $class) {
+            ClassRoom::create([
+                'class_name' => $class['class_name'],
+                'lecturer_id' => $lecturer->id, // Linking to the lecturer
+            ]);
+        }
+        $this->command->info('✅ CS Classes created and assigned to Lecturer.');
     }
 }

@@ -10,19 +10,30 @@ class QuestionOptionSeeder extends Seeder
 {
     public function run(): void
     {
-        $mcqQuestions = Question::where('question_type', 'mcq')->get();
+        $questions = Question::all();
 
-        foreach ($mcqQuestions as $question) {
-            $correctIndex = rand(0,3);
-            for ($i=0; $i<4; $i++) {
+        foreach ($questions as $question) {
+            if ($question->question_text === "What does HTML stand for?") {
+                $options = [
+                    ['text' => 'Hyper Text Markup Language', 'is_correct' => true],
+                    ['text' => 'High Tech Modern Language', 'is_correct' => false],
+                    ['text' => 'Hyper Transfer Main Link', 'is_correct' => false],
+                ];
+            } else {
+                $options = [
+                    ['text' => 'Unique Identifier', 'is_correct' => true],
+                    ['text' => 'Duplicate Value', 'is_correct' => false],
+                    ['text' => 'Null Value', 'is_correct' => false],
+                ];
+            }
+
+            foreach ($options as $opt) {
                 QuestionOption::create([
                     'question_id' => $question->id,
-                    'option_text' => "Option ".($i+1),
-                    'is_correct' => $i === $correctIndex,
+                    'option_text' => $opt['text'],
+                    'is_correct' => $opt['is_correct'],
                 ]);
             }
         }
-
-        $this->command->info('✅ Question options created.');
     }
 }

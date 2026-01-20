@@ -15,17 +15,13 @@ class ExamSeeder extends Seeder
         $subjects = Subject::all();
 
         foreach ($subjects as $subject) {
-            Exam::factory(2)->create([
-                'title' => "Exam for {$subject->name}",
-                'description' => "This is an exam for the subject {$subject->name}.",
-                'duration_minutes' => 60,
-                'start_time' => now()->addDays(7),
-                'end_time' => now()->addDays(7)->addMinutes(60),
+            Exam::create([
+                'title' => "{$subject->subject_name} Final Quiz",
+                'description' => "Assess knowledge in {$subject->subject_name}.",
+                'subject_id' => $subject->id,
                 'created_by' => $lecturer->id,
-                'duration_minutes' => 15,
+                'duration_minutes' => 30,
             ]);
         }
-
-        $this->command->info('✅ Exams created.');
     }
 }
