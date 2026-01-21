@@ -17,6 +17,11 @@ class Exam extends Model
         'end_time',
         'created_by',
     ];
+
+    protected $casts = [
+        'start_time' => 'datetime', // Replace 'start_time' with your actual column name
+    ];
+    
     // Exam → Subject
     public function subject()
     {

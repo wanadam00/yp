@@ -10,13 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ExamAttempt extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'exam_id',
         'student_id',
         'started_at',
         'submitted_at',
         'status',
+    ];
+
+    protected $casts = [
+        'started_at' => 'datetime',
     ];
 
     // Attempt → Exam

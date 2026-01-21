@@ -13,43 +13,73 @@ class StudentExamResultController extends Controller
 {
     public function submit(Request $request, ExamAttempt $attempt)
     {
-        $answers = $request->input('answers'); // Format: [question_id => option_id]
+        // $request->answers is [question_id => value]
+        $answers = $request->input('answers', []);
 
-        foreach ($request->answers as $questionId => $optionId) {
-            $option = QuestionOption::find($optionId);
+        foreach ($answers as $questionId => $value) {
+            $question = Question::findOrFail($questionId);
 
-            StudentAnswer::create([
-                'exam_attempt_id'    => $attempt->id,
-                'question_id'        => $questionId,
-                'selected_option_id' => $optionId,
-                'is_correct'         => $option->is_correct, // This MUST be saved here
-            ]);
+            if ($question->question_type === 'mcq') {
+                // Handle Multiple Choice
+                $option = QuestionOption::find($value);
+                $isCorrect = $option ? $option->is_correct : false;
+
+                StudentAnswer::create([
+                    'exam_attempt_id'    => $attempt->id,
+                    'question_id'        => $questionId,
+                    'selected_option_id' => $value,
+                    'answer_text'        => null,
+                    // Auto-calculate marks for MCQ
+                    'marks_awarded'      => $isCorrect ? $question->marks : 0,
+                ]);
+            } else {
+                // Handle Text Question (TQ)
+                StudentAnswer::create([
+                    'exam_attempt_id'    => $attempt->id,
+                    'question_id'        => $questionId,
+                    'selected_option_id' => null,
+                    'answer_text'        => $value,
+                    // TQ starts at 0 until lecturer reviews it
+                    'marks_awarded'      => 0,
+                ]);
+            }
         }
 
-        $attempt->update(['status' => 'submitted', 'submitted_at' => now()]);
+        // Update attempt status
+        $attempt->update([
+            'status' => 'submitted',
+            'submitted_at' => now()
+        ]);
 
         return redirect()->route('student.results.show', $attempt->id);
     }
 
     public function show(ExamAttempt $attempt)
     {
-        // Load answers PLUS the selectedOption relationship
-        $attempt->load(['exam.questions.options', 'answers.selectedOption']);
+        // Load relationships to display the questions and student answers
+        $attempt->load(['exam.questions.options', 'answers.question']);
 
-        $totalQuestions = $attempt->exam->questions->count();
+        // 1. Calculate the Total Marks Earned (Sum of MCQ + TQ marks)
+        $totalMarksEarned = $attempt->answers->sum('marks_awarded');
 
-        // Calculate score by looking THROUGH the relationship to the option
-        $correctAnswers = $attempt->answers->filter(function ($answer) {
-            // Access is_correct from the QuestionOption model via the relationship
-            return $answer->selectedOption && $answer->selectedOption->is_correct;
-        })->count();
+        // 2. Calculate the Total Possible Marks for the whole exam
+        $totalPossibleMarks = $attempt->exam->questions->sum('marks');
+
+        // 3. Count how many questions are still "Pending" (TQ questions with 0 marks)
+        // Note: This is a simple check; you might want to add a 'is_marked' boolean to StudentAnswer later
+        $hasPendingGrading = $attempt->exam->questions()
+            ->where('question_type', 'tq')
+            ->exists();
 
         return inertia('Student/Results/Show', [
             'attempt' => $attempt,
             'score' => [
-                'correct' => $correctAnswers,
-                'total' => $totalQuestions,
-                'percentage' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0
+                'earned' => $totalMarksEarned,
+                'possible' => $totalPossibleMarks,
+                'percentage' => $totalPossibleMarks > 0
+                    ? round(($totalMarksEarned / $totalPossibleMarks) * 100, 2)
+                    : 0,
+                'is_pending' => $hasPendingGrading // Tells the student if TQ is still being reviewed
             ]
         ]);
     }

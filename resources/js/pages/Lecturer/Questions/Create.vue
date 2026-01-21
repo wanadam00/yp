@@ -13,7 +13,7 @@ defineProps({
 const form = useForm({
     exam_id: '',
     question_text: '',
-    question_type: 'text',
+    question_type: 'tq',
     marks: 1,
     options: [
         { text: '', is_correct: false },
@@ -75,7 +75,7 @@ const submit = () => {
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300">Question Type</label>
                     <select v-model="form.question_type" class="w-full p-2 border rounded" required>
-                        <option value="text">Text Answer</option>
+                        <option value="tq">Text Answer</option>
                         <option value="mcq">Multiple Choice</option>
                     </select>
                     <span class="text-red-500 text-sm" v-if="form.errors.question_type">{{ form.errors.question_type

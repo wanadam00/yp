@@ -25,19 +25,30 @@ defineProps({
                     </div>
 
                     <div class="mt-6">
-                        <Link v-if="!exam.attempt_status" :href="`/student/exams/${exam.id}/start`" method="post"
-                            as="button"
-                            class="w-full text-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-                            Start Exam
-                        </Link>
+                        <div v-if="exam.is_expired && !exam.attempt_id"
+                            class="w-full text-center px-4 py-2 text-sm font-medium text-red-500 bg-red-50 border border-red-200 rounded-lg">
+                            Exam Missed
+                        </div>
 
-                        <Link v-else-if="exam.attempt_status === 'in_progress'"
-                            :href="`/student/exam-attempts/${exam.attempt_id}`"
+                        <template v-else-if="!exam.attempt_status">
+                            <Link v-if="exam.is_opened" :href="`/student/exams/${exam.id}/start`" method="post"
+                                as="button"
+                                class="w-full text-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                                Start Exam
+                            </Link>
+
+                            <button v-else disabled
+                                class="w-full text-center px-4 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
+                                Available on {{ exam.formatted_start }}
+                            </button>
+                        </template>
+
+                        <Link v-else-if="exam.attempt_status === 'in_progress'" :href="`/student/exams/${exam.id}`"
                             class="w-full block text-center px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition">
                             Continue Exam
                         </Link>
 
-                        <Link v-else-if="exam.attempt_status === 'submitted'"
+                        <Link v-else-if="['submitted', 'timeout'].includes(exam.attempt_status)"
                             :href="`/student/results/${exam.attempt_id}`"
                             class="w-full block text-center px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition">
                             View Result

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, FileQuestionIcon, BookOpenText } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, FileQuestionIcon, BookOpenText, FileBadge } from 'lucide-vue-next';
 
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -43,6 +43,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                 title: 'Exams',
                 href: '/exams',
                 icon: BookOpenText,
+            },
+            {
+                title: 'Grading',
+                href: '/grading',
+                icon: FileBadge,
             },
             {
                 title: 'Questions',

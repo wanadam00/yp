@@ -10,6 +10,7 @@ use App\Http\Controllers\Lecturer\QuestionController;
 use App\Http\Controllers\ExamAttemptController;
 use App\Http\Controllers\Lecturer\ClassStudentController;
 use App\Http\Controllers\Lecturer\ExamPreviewController;
+use App\Http\Controllers\Lecturer\GradingController;
 use App\Http\Controllers\Lecturer\QuestionOptionController;
 use App\Http\Controllers\Student\StudentExamController;
 use App\Http\Controllers\Student\StudentAnswerController;
@@ -26,13 +27,19 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'role:lecturer'])->group(function () {
-    Route::resource('exams', ExamController::class);
-    Route::resource('questions', QuestionController::class);
-    Route::resource('question-options', QuestionOptionController::class);
-    Route::get('exams/{exam}/preview', [ExamPreviewController::class, 'show'])->name('exams.preview');
-    Route::get('exams/{exam}/assign', [ExamController::class, 'assign'])->name('exams.assign');
-    Route::post('exams/{exam}/assign', [ExamController::class, 'storeAssignment']);
+    Route::resource('/exams', ExamController::class);
+    Route::resource('/questions', QuestionController::class);
+    Route::resource('/question-options', QuestionOptionController::class);
+    Route::get('/exams/{exam}/preview', [ExamPreviewController::class, 'show'])->name('exams.preview');
+    Route::get('/exams/{exam}/assign', [ExamController::class, 'assign'])->name('exams.assign');
+    Route::post('/exams/{exam}/assign', [ExamController::class, 'storeAssignment']);
     Route::resource('class-student', ClassStudentController::class);
+    // Route::resource('grading', GradingController::class);
+    Route::get('/grading', [GradingController::class, 'index'])->name('grading.index');
+    Route::get('/grading/{attempt}', [GradingController::class, 'show'])->name('grading.show');
+    Route::patch('/grading/answers/{answer}', [GradingController::class, 'update'])->name('grading.update');
+    Route::patch('/grading/attempts/{attempt}/bulk-grade', [GradingController::class, 'bulkGrade'])
+        ->name('grading.bulk-grade');
 });
 
 Route::middleware(['auth', 'role:student'])->group(function () {

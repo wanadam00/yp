@@ -28,7 +28,7 @@ class QuestionController extends Controller
         $request->validate([
             'exam_id' => 'required|exists:exams,id',
             'question_text' => 'required',
-            'question_type' => 'required|in:mcq,text',
+            'question_type' => 'required|in:mcq,tq',
             'marks' => 'required|integer|min:1',
         ]);
 
@@ -71,50 +71,47 @@ class QuestionController extends Controller
 
     public function update(Request $request, Question $question)
     {
-        // 1. Validate everything (Question + Options)
         $request->validate([
             'exam_id' => 'required|exists:exams,id',
             'question_text' => 'required',
-            'question_type' => 'required|in:mcq,text',
+            'question_type' => 'required|in:mcq,tq',
             'marks' => 'required|integer|min:1',
-            // Validate nested options array
-            'options' => 'required_if:question_type,mcq|array|min:2',
-            'options.*.id' => 'nullable',
-            'options.*.text' => 'required|string',
-            'options.*.is_correct' => 'boolean',
         ]);
 
-        // 2. Update Question Basic Info
-        $question->update([
+        // 1. Fill the data
+        $question->fill([
             'exam_id' => $request->exam_id,
             'question_text' => $request->question_text,
             'question_type' => $request->question_type,
             'marks' => $request->marks,
         ]);
 
-        // 3. Sync Options
+        // 2. Force the save even if Laravel thinks nothing changed
+        $question->save();
+
+        // 3. Handle Options (Delete and Re-create to ensure sync)
+        // This part MUST run even if the question type didn't change
         if ($request->question_type === 'mcq') {
-            $incomingIds = collect($request->options)->pluck('id')->filter()->toArray();
+            // Clear old ones
+            $question->options()->delete();
 
-            // Delete options no longer in the form
-            $question->options()->whereNotIn('id', $incomingIds)->delete();
-
-            // Update existing or create new
-            foreach ($request->options as $optionData) {
-                $question->options()->updateOrCreate(
-                    ['id' => $optionData['id'] ?? null],
-                    [
-                        'option_text' => $optionData['text'],
-                        'is_correct' => (bool) ($optionData['is_correct'] ?? false),
-                    ]
-                );
+            // Create new ones from the request
+            if ($request->has('options')) {
+                foreach ($request->options as $option) {
+                    if (!empty($option['text'])) {
+                        $question->options()->create([
+                            'option_text' => $option['text'],
+                            'is_correct' => filter_var($option['is_correct'], FILTER_VALIDATE_BOOLEAN),
+                        ]);
+                    }
+                }
             }
         } else {
-            // If type changed to text, remove all options
+            // If it's TQ, ensure no MCQ options remain
             $question->options()->delete();
         }
 
-        return redirect()->route('questions.index')->with('success', 'Question updated successfully');
+        return redirect()->route('questions.index')->with('success', 'Updated successfully');
     }
 
     public function destroy(Question $question)

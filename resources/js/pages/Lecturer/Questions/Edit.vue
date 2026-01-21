@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 
@@ -40,8 +40,34 @@ const removeOption = (index) => {
     }
 }
 
+watch(
+    () => form.question_type,
+    (type) => {
+        if (type === 'tq') {
+            form.options = [] // prevent accidental submit
+        }
+    }
+)
+
 const submit = () => {
-    form.put(`/questions/${props.question.id}`)
+    const payload = {
+        exam_id: form.exam_id,
+        question_text: form.question_text,
+        question_type: form.question_type,
+        marks: form.marks,
+    }
+
+    // ONLY send options if MCQ
+    if (form.question_type === 'mcq') {
+        payload.options = form.options
+    }
+
+    form.put(`/questions/${props.question.id}`, {
+        data: payload,
+        onSuccess: () => {
+            // optional success toast
+        }
+    })
 }
 </script>
 
@@ -83,9 +109,12 @@ const submit = () => {
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300">Question Type</label>
                     <select v-model="form.question_type" class="w-full p-2 border rounded" required>
-                        <option value="text">Text Answer</option>
+                        <option value="tq">Text Answer</option>
                         <option value="mcq">Multiple Choice</option>
                     </select>
+                    <span v-if="form.errors.question_type" class="text-red-500 text-sm">
+                        {{ form.errors.question_type }}
+                    </span>
                 </div>
 
                 <!-- Marks -->
@@ -93,6 +122,9 @@ const submit = () => {
                     <label class="block text-gray-700 dark:text-gray-300">Marks</label>
                     <input v-model.number="form.marks" type="number" min="1" class="w-full p-2 border rounded"
                         required />
+                    <span v-if="form.errors.marks" class="text-red-500 text-sm">
+                        {{ form.errors.marks }}
+                    </span>
                 </div>
 
                 <!-- MCQ Options -->
