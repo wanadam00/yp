@@ -114,8 +114,10 @@ http://127.0.0.1:8000
 
 | Role     | Email                                         | Password |
 | -------- | --------------------------------------------- | -------- |
-| Lecturer | lecturer@test.com | password |
-| Student  | student@test.com  | password |
+| Lecturer | lecturer@example.com | password |
+| Student  | student@example.com  | password |
+
+All user seeder password are same which is **password**.
 
 > Change credentials after first login.
 
@@ -127,6 +129,9 @@ http://127.0.0.1:8000
 
   * Manage classes
   * Assign students to classes
+  * Manage subjects
+  * Manage exams
+
 * **Student**
 
   * View assigned classes
