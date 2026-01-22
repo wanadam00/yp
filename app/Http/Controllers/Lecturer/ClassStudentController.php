@@ -18,6 +18,42 @@ class ClassStudentController extends Controller
             'classes' => $classes,
         ]);
     }
+
+    public function create()
+    {
+        $students = User::role('student')->get();
+
+        return inertia('Lecturer/Classes/Create', [
+            'students' => $students,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'class_name' => 'required',
+            'student_ids' => 'nullable|array',
+            'student_ids.*' => 'exists:users,id',
+        ]);
+
+        $class = ClassRoom::create([
+            'class_name' => $request->class_name,
+            'lecturer_id' => auth()->id(),
+        ]);
+
+        $studentIds = $request->student_ids ?? [];
+
+        // Add/Update students to the class
+        foreach ($studentIds as $studentId) {
+            ClassStudent::create([
+                'class_id' => $class->id,
+                'student_id' => $studentId,
+            ]);
+        }
+        return redirect()->route('class-student.index')
+            ->with('success', 'Class created successfully.');
+    }
+
     public function edit(ClassRoom $class_student) // Variable name matches resource
     {
         $students = User::role('student')->get();
@@ -36,26 +72,32 @@ class ClassStudentController extends Controller
     public function update(Request $request, ClassRoom $class_student)
     {
         $request->validate([
-            'student_ids' => 'array',
+            'class_name' => 'required|string|max:255', // Add this
+            'student_ids' => 'nullable|array',
             'student_ids.*' => 'exists:users,id',
+        ]);
+
+        // Update the Class Name
+        $class_student->update([
+            'class_name' => $request->class_name
         ]);
 
         $studentIds = $request->student_ids ?? [];
 
-        // Delete removed students
+        // Sync Students (Delete removed ones)
         ClassStudent::where('class_id', $class_student->id)
             ->whereNotIn('student_id', $studentIds)
             ->delete();
 
-        // Add/Update students
+        // Add new ones
         foreach ($studentIds as $studentId) {
             ClassStudent::updateOrCreate([
-                'class_id' => $class_student->id, // This will now be populated
+                'class_id' => $class_student->id,
                 'student_id' => $studentId,
             ]);
         }
 
         return redirect()->route('class-student.index')
-            ->with('success', 'Students updated successfully.');
+            ->with('success', 'Class details and students updated successfully.');
     }
 }

@@ -68,7 +68,7 @@ const submit = () => {
                     <textarea v-model="form.question_text" class="w-full p-2 border rounded" rows="4"
                         required></textarea>
                     <span class="text-red-500 text-sm" v-if="form.errors.question_text">{{ form.errors.question_text
-                        }}</span>
+                    }}</span>
                 </div>
 
                 <!-- Question Type -->
@@ -79,7 +79,7 @@ const submit = () => {
                         <option value="mcq">Multiple Choice</option>
                     </select>
                     <span class="text-red-500 text-sm" v-if="form.errors.question_type">{{ form.errors.question_type
-                        }}</span>
+                    }}</span>
                 </div>
 
                 <!-- Marks -->
@@ -110,8 +110,10 @@ const submit = () => {
                     <Link href="/questions"
                         class="px-4 py-2 text-gray-700 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">Cancel
                     </Link>
-                    <button type="submit"
-                        class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
+                    <button type="submit" :disabled="form.processing"
+                        class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-none transition">
+                        {{ form.processing ? 'Processing...' : 'Save' }}
+                    </button>
                 </div>
             </form>
         </div>

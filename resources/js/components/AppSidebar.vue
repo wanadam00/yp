@@ -58,7 +58,12 @@ const mainNavItems = computed<NavItem[]>(() => {
                 title: 'Classes',
                 href: '/class-student',
                 icon: Folder,
-            }
+            },
+            {
+                title: 'Subjects',
+                href: '/subjects',
+                icon: Folder,
+            },
         )
     }
 

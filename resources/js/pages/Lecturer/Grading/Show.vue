@@ -33,7 +33,7 @@ const saveAllGrades = () => {
             <header
                 class="mb-8 flex justify-between items-center sticky top-0 bg-gray-50 dark:bg-gray-900 py-4 z-20 border-b dark:border-gray-700">
                 <div>
-                    <Link href="/grading" class="text-sm text-indigo-600 font-bold">← Back to Submissions</Link>
+                    <!-- <Link href="/grading" class="text-sm text-indigo-600 font-bold">← Back to Submissions</Link> -->
                     <h1 class="text-2xl font-black mt-2">{{ attempt.exam?.title }}</h1>
                     <p class="text-gray-500 text-sm">Student: {{ attempt.student?.name }}</p>
                 </div>

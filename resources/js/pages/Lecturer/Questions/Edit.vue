@@ -151,11 +151,11 @@ const submit = () => {
                     <Link href="/questions" class="px-4 py-2 border rounded">
                         Cancel
                     </Link>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
-                        Update
+                    <button type="submit" :disabled="form.processing"
+                        class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-none transition">
+                        {{ form.processing ? 'Updating...' : 'Update' }}
                     </button>
                 </div>
-
             </form>
         </div>
     </AppLayout>

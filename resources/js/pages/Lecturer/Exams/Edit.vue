@@ -108,8 +108,10 @@ const submit = () => {
                     <Link href="/exams"
                         class="px-4 py-2 text-gray-700 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">Cancel
                     </Link>
-                    <button type="submit"
-                        class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">Update</button>
+                    <button type="submit" :disabled="form.processing"
+                        class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-none transition">
+                        {{ form.processing ? 'Updating...' : 'Update' }}
+                    </button>
                 </div>
             </form>
         </div>

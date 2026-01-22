@@ -17,9 +17,6 @@ const isLecturer = computed(() => user.value.roles?.some(r => r.name === 'lectur
 </script>
 
 <template>
-
-    <Head title="Dashboard" />
-
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-6 max-w-7xl mx-auto space-y-6">
 

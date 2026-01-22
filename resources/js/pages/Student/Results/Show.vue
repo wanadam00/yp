@@ -17,9 +17,9 @@ const getAnswer = (questionId) => {
     <AppLayout>
         <div class="max-w-4xl p-6 mx-auto">
             <div class="mb-8">
-                <Link href="/student/exams" class="text-sm text-blue-600 hover:underline">
+                <!-- <Link href="/student/exams" class="text-sm text-blue-600 hover:underline">
                     &larr; Back to My Exams
-                </Link>
+                </Link> -->
 
                 <div
                     class="mt-4 p-8 bg-white border rounded-2xl shadow-sm dark:bg-gray-800 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between">
@@ -28,10 +28,10 @@ const getAnswer = (questionId) => {
                         <p class="text-gray-500 mt-1">Submitted on {{ new Date(attempt.submitted_at).toLocaleString() }}
                         </p>
 
-                        <div v-if="score.is_pending"
+                        <!-- <div v-if="score.is_pending"
                             class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
                             Manual Grading Pending
-                        </div>
+                        </div> -->
                     </div>
 
                     <div

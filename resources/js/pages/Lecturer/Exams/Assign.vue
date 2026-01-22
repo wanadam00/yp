@@ -75,12 +75,12 @@ const submit = () => {
                             <div v-for="classroom in classes" :key="classroom.id" @click="toggleClass(classroom.id)"
                                 class="relative flex items-center p-4 border rounded-lg cursor-pointer transition-all"
                                 :class="form.class_ids.includes(classroom.id)
-                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500'
+                                    ? 'border-indigo-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-indigo-500'
                                     : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'">
 
                                 <div class="flex items-center h-5">
                                     <input type="checkbox" :checked="form.class_ids.includes(classroom.id)"
-                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                                        class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
                                 </div>
 
                                 <div class="ml-3">
@@ -102,8 +102,8 @@ const submit = () => {
                             Cancel
                         </Link>
                         <button type="submit" :disabled="form.processing"
-                            class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition shadow-sm">
-                            {{ form.processing ? 'Saving...' : 'Save Assignments' }}
+                            class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-none transition">
+                            {{ form.processing ? 'Saving...' : 'Save' }}
                         </button>
                     </div>
                 </form>

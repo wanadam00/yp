@@ -24,9 +24,13 @@ const deleteClass = (id) => {
                 <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
                     My Classes
                 </h1>
-                <Link href="/classes/create"
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-                    + Create Class
+                <Link href="/class-student/create"
+                    class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create Class
                 </Link>
             </div>
 
@@ -40,7 +44,7 @@ const deleteClass = (id) => {
                 <div v-for="classroom in classes" :key="classroom.id"
                     class="flex flex-col bg-white border rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 hover:shadow-md transition-shadow">
 
-                    <div class="p-5 flex-grow">
+                    <div class="p-5">
                         <div class="flex items-start justify-between">
                             <div>
                                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -59,7 +63,7 @@ const deleteClass = (id) => {
 
                     <div
                         class="px-5 py-4 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-700 rounded-b-xl flex flex-wrap gap-2 justify-end">
-                        <Link :href="`/class-student/${classroom.id}/edit`"
+                        <!-- <Link :href="`/class-student/${classroom.id}/edit`"
                             class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-800 transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1.5" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -67,9 +71,9 @@ const deleteClass = (id) => {
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                             Students
-                        </Link>
+                        </Link> -->
 
-                        <Link :href="`/classes/${classroom.id}/edit`"
+                        <Link :href="`/class-student/${classroom.id}/edit`"
                             class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 transition">
                             Edit
                         </Link>

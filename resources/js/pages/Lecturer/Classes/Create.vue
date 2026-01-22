@@ -1,31 +1,38 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
+import { Head, useForm, Link } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
-    class_student: Object,
-    students: Array,
-    assignedStudentIds: Array
+    students: Array
 })
 
-// Search state
-const search = ref('')
-
-// Initialize form
 const form = useForm({
-    class_name: props.class_student.class_name, // Pull existing name
-    student_ids: [...props.assignedStudentIds]
+    class_name: '',
+    student_ids: []
 })
 
-// Filtered student list based on search input
+// Search state for students
+const searchQuery = ref('')
+
+// Filter students based on search
 const filteredStudents = computed(() => {
     return props.students.filter(student =>
-        student.name.toLowerCase().includes(search.value.toLowerCase()) ||
-        student.email.toLowerCase().includes(search.value.toLowerCase())
+        student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        student.email.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
 })
 
+const submit = () => {
+    // form.post(route('class-student.store'))
+    form.post('/class-student', {
+        onSuccess: () => {
+            form.reset()
+        }
+    })
+}
+
+// Toggle selection helper
 const toggleStudent = (id) => {
     const index = form.student_ids.indexOf(id)
     if (index > -1) {
@@ -33,15 +40,6 @@ const toggleStudent = (id) => {
     } else {
         form.student_ids.push(id)
     }
-}
-
-const submit = () => {
-    form.put(`/class-student/${props.class_student.id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            // Optional: alert user
-        }
-    });
 }
 </script>
 
@@ -116,7 +114,7 @@ const submit = () => {
                         </Link>
                         <button type="submit" :disabled="form.processing"
                             class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-none transition">
-                            {{ form.processing ? 'Updating...' : 'Update' }}
+                            {{ form.processing ? 'Processing...' : 'Save' }}
                         </button>
                     </div>
                 </form>

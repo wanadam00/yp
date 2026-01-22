@@ -23,7 +23,7 @@ class ExamController extends Controller
 
     public function create()
     {
-        $subjects = Subject::whereHas('class', function ($q) {
+        $subjects = Subject::whereHas('classRoom', function ($q) {
             $q->where('lecturer_id', auth()->id());
         })->get();
         // dd($subjects);
@@ -54,7 +54,7 @@ class ExamController extends Controller
 
     public function edit(Exam $exam)
     {
-        $subjects = Subject::whereHas('class', function ($q) {
+        $subjects = Subject::whereHas('classRoom', function ($q) {
             $q->where('lecturer_id', auth()->id());
         })->get();
 
